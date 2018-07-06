@@ -14,7 +14,7 @@ import java.io.ObjectOutputStream;
  */
 public class FileUtil
 {
-    private static final File FILE = new File("litedownloader.db");
+    private static final File FILE = new File("lite-downloader.data");
     
     public synchronized static void serialize(Database db) throws FileNotFoundException, IOException
     {

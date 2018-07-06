@@ -5,4 +5,4 @@ Simple swing based Java Downloader
 JDK 8 or above
 
 ### Download Link
-[Lite Downloader](https://github.com/nabilanam/Lite-Downloader/blob/master/dist/Lite-Downloader.jar)
+[Lite Downloader](https://raw.githubusercontent.com/nabilanam/Lite-Downloader/master/dist/Lite-Downloader.jar)

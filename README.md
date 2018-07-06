@@ -1,8 +1,8 @@
 # Lite-Downloader
-Simple Java Downloader
+Simple swing based Java Downloader
 
-## Build Requirement
+### Build Requirement
 JDK 8 or above
 
-## Download
+### Download Link
 [Lite Downloader](https://github.com/nabilanam/Lite-Downloader/blob/master/dist/Lite-Downloader.jar)

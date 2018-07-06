@@ -9,7 +9,7 @@ import com.nabilanam.litedownloader.view.MainFrame;
  *
  * @author nabil
  */
-class MyDownloader
+class LiteDownloader
 {
     public static void main(String[] args)
     {

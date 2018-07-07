@@ -4,6 +4,7 @@ import com.nabilanam.litedownloader.model.Database;
 import com.nabilanam.litedownloader.model.Download;
 import com.nabilanam.litedownloader.model.DownloadInfoCallable;
 import com.nabilanam.litedownloader.model.FileUtil;
+import com.nabilanam.litedownloader.model.Messages;
 import com.nabilanam.litedownloader.view.PaneGenerator;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -24,6 +25,7 @@ public class TopbarController
     private final Database database;
     private AddLinkListener addLinkListener;
     private PaneGenerator paneGenerator;
+    private int TIMEOUT = 30;
 
     public TopbarController()
     {
@@ -48,7 +50,7 @@ public class TopbarController
         try
         {
             Download download;
-            if ((download = future.get(3, TimeUnit.SECONDS)) != null)
+            if ((download = future.get(TIMEOUT, TimeUnit.SECONDS)) != null)
             {
                 database.add(download);
                 addLinkListener.linkAdded(id);
@@ -56,15 +58,15 @@ public class TopbarController
         }
         catch (InterruptedException ex)
         {
-            showErrorMessage("Download link can't be added\nError: Link checking interrupted");
+            showErrorMessage(Messages.ERROR_LINK_CHECK_INTERRUPTED);
         }
         catch (ExecutionException ex)
         {
-            showErrorMessage("Download link can't be added\nError: Link check exception");
+            showErrorMessage(Messages.ERROR_LINK_CHECK_EXCEPTION);
         }
         catch (TimeoutException ex)
         {
-            showErrorMessage("Download link can't be added\nError: Link check timeout");
+            showErrorMessage(Messages.ERROR_LINK_CHECK_TIMEOUT);
         }
     }
 
@@ -82,7 +84,7 @@ public class TopbarController
         }
         catch (IOException ex)
         {
-            showErrorMessage("Folder path couldn't be saved");
+            showErrorMessage(Messages.ERROR_FOLDER_PATH_COULD_NOT_BE_SAVED);
         }
     }
 

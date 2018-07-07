@@ -1,6 +1,8 @@
 package com.nabilanam.litedownloader.view;
 
 import com.nabilanam.litedownloader.controller.TopbarController;
+import com.nabilanam.litedownloader.model.Messages;
+
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -41,7 +43,7 @@ public final class TopbarPanel extends JPanel
         addLabel.addActionListener((ActionEvent e) ->
         {
             String link;
-            if ((link = tbc.showInputDialog("Enter download url")) != null)
+            if ((link = tbc.showInputDialog(Messages.INPUT_GUI_DOWNLOAD_URL)) != null)
             {
                 if (!link.trim().isEmpty())
                 {
@@ -49,7 +51,7 @@ public final class TopbarPanel extends JPanel
                 }
                 else
                 {
-                    tbc.showErrorMessage("Empty link");
+                    tbc.showErrorMessage(Messages.ERROR_GUI_EMPTY_DOWNLOAD_LINK);
                 }
             }
         });
@@ -66,7 +68,7 @@ public final class TopbarPanel extends JPanel
             }
             catch (IOException ex)
             {
-                tbc.showErrorMessage("Dialog launch error");
+                tbc.showErrorMessage(Messages.ERROR_GUI_DIALOG_LAUNCH);
             }
             if (folderPath != null)
             {

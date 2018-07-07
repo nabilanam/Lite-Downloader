@@ -41,7 +41,7 @@ public class DownloadInfoCallable implements Callable<Download>
         }
         catch (MalformedURLException ex)
         {
-            tableController.showErrorMessageThreadSafe("Malformed URL");
+            tableController.showErrorMessageThreadSafe(Messages.ERROR_URL_MALFORMED);
             return download;
         }
         try
@@ -50,7 +50,7 @@ public class DownloadInfoCallable implements Callable<Download>
         }
         catch (URISyntaxException ex)
         {
-            tableController.showErrorMessageThreadSafe("URL syntax error");
+            tableController.showErrorMessageThreadSafe(Messages.ERROR_URL_SYNTAX);
             return download;
         }
         HttpURLConnection con;
@@ -61,12 +61,12 @@ public class DownloadInfoCallable implements Callable<Download>
         }
         catch (ProtocolException ex)
         {
-            tableController.showErrorMessageThreadSafe("http protocol exception");
+            tableController.showErrorMessageThreadSafe(Messages.ERROR_URL_HTTP_PROTOCOL_EXCEPTION);
             return download;
         }
         catch (IOException ex)
         {
-            tableController.showErrorMessageThreadSafe("I/O Exception");
+            tableController.showErrorMessageThreadSafe(Messages.ERROR_IO_EXCEPTION);
             return download;
         }
         int responseCode;
@@ -78,7 +78,7 @@ public class DownloadInfoCallable implements Callable<Download>
         }
         catch (IOException ex)
         {
-            tableController.showErrorMessageThreadSafe("Connection error");
+            tableController.showErrorMessageThreadSafe(Messages.ERROR_IO_EXCEPTION);
             return download;
         }
         if (responseCode == HttpURLConnection.HTTP_OK)

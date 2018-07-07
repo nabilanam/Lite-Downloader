@@ -6,6 +6,7 @@ import com.nabilanam.litedownloader.model.Download;
 import com.nabilanam.litedownloader.model.DownloadFileRunnable;
 import com.nabilanam.litedownloader.model.DownloadStatus;
 import com.nabilanam.litedownloader.model.FileUtil;
+import com.nabilanam.litedownloader.model.Messages;
 import com.nabilanam.litedownloader.model.TableModel;
 import com.nabilanam.litedownloader.view.PaneGenerator;
 import java.awt.Desktop;
@@ -107,7 +108,7 @@ public class TableController
         }
         catch (IOException ex)
         {
-            showErrorMessage("File can't be deleted");
+            showErrorMessage(Messages.ERROR_FILE_CAN_NOT_BE_DELETED);
         }
         removeDownloadLink(did);
     }
@@ -122,12 +123,12 @@ public class TableController
                 desktop.open(file);
 			}
         	else {
-        		showErrorMessage("File doesn't exist");
+        		showErrorMessage(Messages.ERROR_FILE_DOES_NOT_EXIST);
         	}
         }
         catch (IOException ex)
         {
-            showErrorMessage("Api not supported");
+            showErrorMessage(Messages.ERROR_PLATFORM_NOT_SUPPORTED);
         }
     }
 
@@ -141,12 +142,12 @@ public class TableController
                 desktop.open(file);
 			}
         	else {
-        		showErrorMessage("Folder doesn't exist");
+        		showErrorMessage(Messages.ERROR_FOLDER_DOES_NOT_EXIST);
         	}
         }
         catch (IOException ex)
         {
-            showErrorMessage("Api not supported");
+            showErrorMessage(Messages.ERROR_PLATFORM_NOT_SUPPORTED);
         }
     }
 
@@ -174,7 +175,7 @@ public class TableController
         }
         catch (IOException ex)
         {
-            showErrorMessage("Change couldn't be saved");
+            showErrorMessage(Messages.ERROR_DB_CHANGE_COULD_NOT_BE_SAVED);
         }
     }
 

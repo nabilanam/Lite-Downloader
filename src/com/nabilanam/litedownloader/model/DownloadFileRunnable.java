@@ -117,7 +117,7 @@ public class DownloadFileRunnable implements Runnable
                             Logger.getLogger(DownloadFileRunnable.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
-                    tableController.showErrorMessageThreadSafe("File size mismatch!");
+                    tableController.showErrorMessageThreadSafe(Messages.ERROR_FILE_SIZE_MISMATCH);
                     download.setDownloadStatus(DownloadStatus.Error);
                     tableController.fireStatusColumnUpdatedThreadSafe(download.getDId());
                 }
@@ -142,7 +142,7 @@ public class DownloadFileRunnable implements Runnable
 
     private boolean getConfirmationFileDelete()
     {
-        boolean confirm = tableController.showConfirmDialogThreadSafe("File already exists.\nDelete file and proceed?");
+        boolean confirm = tableController.showConfirmDialogThreadSafe(Messages.CONFIRM_FILE_DELETE);
         if (confirm)
         {
             try
@@ -151,7 +151,7 @@ public class DownloadFileRunnable implements Runnable
             }
             catch (IOException ex)
             {
-                tableController.showErrorMessageThreadSafe("Unable to delete " + download.getFilePath().toFile());
+                tableController.showErrorMessageThreadSafe(Messages.ERROR_FILE_CAN_NOT_BE_DELETED + System.lineSeparator() + download.getFilePath().toFile());
             }
         }
         return confirm;
@@ -202,7 +202,7 @@ public class DownloadFileRunnable implements Runnable
         }
         catch (IOException ex)
         {
-            tableController.showErrorMessageThreadSafe("Connection problem!");
+            tableController.showErrorMessageThreadSafe(Messages.ERROR_NETWORK_CONNECTION);
             if (con != null)
             {
                 con.disconnect();
@@ -221,7 +221,7 @@ public class DownloadFileRunnable implements Runnable
             }
             catch (IOException ex)
             {
-                tableController.showErrorMessageThreadSafe("Can't delete existing file!");
+                tableController.showErrorMessageThreadSafe(Messages.ERROR_FILE_MERGE);
             }
         }
         try (FileOutputStream fos = new FileOutputStream(download.getFilePath().toFile()))
@@ -236,7 +236,7 @@ public class DownloadFileRunnable implements Runnable
                     {
                         if (Thread.interrupted())
                         {
-                            tableController.showErrorMessageThreadSafe("File merging process interrupted");
+                            tableController.showErrorMessageThreadSafe(Messages.ERROR_FILE_MERGE_INTERRUPTED);
                         }
                         fos.write(buffer, 0, bytesRead);
                         fos.flush();
@@ -246,12 +246,12 @@ public class DownloadFileRunnable implements Runnable
         }
         catch (FileNotFoundException ex)
         {
-            tableController.showErrorMessageThreadSafe("File merging error!\nFile Not Found Exception");
+            tableController.showErrorMessageThreadSafe(Messages.ERROR_FILE_MERGE+System.lineSeparator()+Messages.ERROR_FILE_DOES_NOT_EXIST);
             return;
         }
         catch (IOException ex)
         {
-            tableController.showErrorMessageThreadSafe("File merging error!\nI/O Exception");
+            tableController.showErrorMessageThreadSafe(Messages.ERROR_FILE_MERGE+System.lineSeparator()+Messages.ERROR_IO_EXCEPTION);
             return;
         }
         for (Path tmpPath : tmpPaths)

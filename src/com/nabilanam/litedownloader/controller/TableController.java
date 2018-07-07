@@ -94,17 +94,12 @@ public class TableController
         try
         {
             Download download = database.get(did);
-            if (download.getDownloadStatus() == DownloadStatus.Paused)
+            
+            for (int a = 0; a < 4; a++)
             {
-                for (int a = 0; a < 4; a++)
-                {
-                    Files.deleteIfExists(Paths.get(download.getFilePath().toString() + a));
-                }
+                Files.deleteIfExists(Paths.get(download.getFilePath().toString() + a));
             }
-            else
-            {
-                Files.deleteIfExists(database.get(did).getFilePath());
-            }
+            Files.deleteIfExists(database.get(did).getFilePath());
         }
         catch (IOException ex)
         {

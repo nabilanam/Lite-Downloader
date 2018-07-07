@@ -130,9 +130,7 @@ public class DownloadRunnable implements Runnable
                     }
                     outputStream.write(buffer, 0, bytesRead);
                     outputStream.flush();
-                    download.addToDownloadedLengthThreadSafe(bytesRead);
-                    tableController.fireDoneColumnUpdatedThreadSafe(did);
-                    tableController.fireDownloadedColumnUpdatedThreadSafe(did);
+                    updateDownloadTableProgressThreadSafe(bytesRead);
                 }
             }
             catch (IOException ex)
@@ -180,4 +178,10 @@ public class DownloadRunnable implements Runnable
             cdl.countDown();
         }
     }
+
+	private void updateDownloadTableProgressThreadSafe(int bytesRead) {
+		download.addToDownloadedLengthThreadSafe(bytesRead);
+		tableController.fireDoneColumnUpdatedThreadSafe(did);
+		tableController.fireDownloadedColumnUpdatedThreadSafe(did);
+	}
 }

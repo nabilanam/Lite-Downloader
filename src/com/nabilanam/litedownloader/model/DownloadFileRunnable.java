@@ -37,15 +37,17 @@ public class DownloadFileRunnable implements Runnable {
 
 	@Override
 	public void run() {
-		if (download.getFilePath().toFile().exists()) {
+		
+		if (!download.getSingleConnectionStatus() && download.getFilePath().toFile().exists()) {
 			if (!getConfirmationFileDelete()) {
 				updateTableDownloadStopped();
 				return;
 			}
 		}
-		boolean supportRanges = supportRanges();
-		if (supportRanges && getStatus() == HttpURLConnection.HTTP_NOT_MODIFIED
+		
+		if (supportRanges() && getStatus() == HttpURLConnection.HTTP_NOT_MODIFIED
 				&& download.getContentLength() > MAX_THREAD) {
+
 			CountDownLatch cdl = new CountDownLatch(MAX_THREAD);
 			long size = download.getContentLength() / MAX_THREAD;
 			long start, end = -1;
@@ -86,9 +88,14 @@ public class DownloadFileRunnable implements Runnable {
 			}
 		} else {
 			CountDownLatch cdl = new CountDownLatch(1);
+			download.setSingleConnectionStatus();
 			es.submit(new DownloadRunnable(cdl, download, tableController));
 			try {
 				cdl.await();
+				if (download.getContentLength() < 0) {
+					download.setContentLength(download.getDownloadedLength());
+					updateTableUndefinedDownload();
+				}
 				updateTableDownloadCompleted();
 			} catch (InterruptedException e) {
 				es.shutdownNow();
@@ -96,6 +103,12 @@ public class DownloadFileRunnable implements Runnable {
 			}
 		}
 		es.shutdown();
+	}
+
+	private void updateTableUndefinedDownload() {
+		tableController.fireSizeCellUpdatedThreadSafe(download.getDId());
+		tableController.fireDoneCellUpdatedThreadSafe(download.getDId());
+		tableController.fireDownloadedCellUpdatedThreadSafe(download.getDId());
 	}
 
 	private void threadSleep() {
@@ -108,17 +121,17 @@ public class DownloadFileRunnable implements Runnable {
 
 	private void updateTableDownloadStopped() {
 		download.setDownloadStatus(DownloadStatus.Stopped);
-		tableController.fireStatusColumnUpdated(download.getDId());
+		tableController.fireStatusCellUpdated(download.getDId());
 	}
 
 	private void updateTableDownloadError() {
 		download.setDownloadStatus(DownloadStatus.Error);
-		tableController.fireStatusColumnUpdatedThreadSafe(download.getDId());
+		tableController.fireStatusCellUpdatedThreadSafe(download.getDId());
 	}
 
 	private void updateTableDownloadCompleted() {
 		download.setDownloadStatus(DownloadStatus.Completed);
-		tableController.fireStatusColumnUpdatedThreadSafe(download.getDId());
+		tableController.fireStatusCellUpdatedThreadSafe(download.getDId());
 	}
 
 	private boolean getConfirmationFileDelete() {

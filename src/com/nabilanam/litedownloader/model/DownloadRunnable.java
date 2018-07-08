@@ -181,7 +181,7 @@ public class DownloadRunnable implements Runnable
 
 	private void updateDownloadTableProgressThreadSafe(int bytesRead) {
 		download.addToDownloadedLengthThreadSafe(bytesRead);
-		tableController.fireDoneColumnUpdatedThreadSafe(did);
-		tableController.fireDownloadedColumnUpdatedThreadSafe(did);
+		tableController.fireDoneCellUpdatedThreadSafe(did);
+		tableController.fireDownloadedCellUpdatedThreadSafe(did);
 	}
 }

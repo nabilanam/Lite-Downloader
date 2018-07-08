@@ -54,7 +54,7 @@ public class TableController
         Download download = database.get(did);
         hashMap.put(did, es.submit(new DownloadFileRunnable(this, download)));
         download.setDownloadStatus(DownloadStatus.Downloading);
-        fireStatusColumnUpdated(did);
+        fireStatusCellUpdated(did);
     }
 
     public void pauseDownload(int did)
@@ -62,7 +62,7 @@ public class TableController
         cancelDownload(hashMap.remove(did));
         database.get(did)
                 .setDownloadStatus(DownloadStatus.Paused);
-        fireStatusColumnUpdated(did);
+        fireStatusCellUpdated(did);
     }
 
     public void pauseDownload(int did, Future future)
@@ -70,7 +70,7 @@ public class TableController
         cancelDownload(future);
         database.get(did)
                 .setDownloadStatus(DownloadStatus.Paused);
-        fireStatusColumnUpdated(did);
+        fireStatusCellUpdated(did);
     }
 
     public void stopDownload(int did)
@@ -78,7 +78,7 @@ public class TableController
         cancelDownload(hashMap.remove(did));
         database.get(did)
                 .setDownloadStatus(DownloadStatus.Stopped);
-        fireStatusColumnUpdated(did);
+        fireStatusCellUpdated(did);
     }
 
     public void removeDownloadLink(int did)
@@ -185,23 +185,28 @@ public class TableController
         saveDatabase();
     }
 
-    public synchronized void fireDoneColumnUpdatedThreadSafe(int row)
+    public synchronized void fireSizeCellUpdatedThreadSafe(int row)
     {
-        tableModel.fireTableCellUpdated(row, Column.DONE.getId());
+        tableModel.fireTableCellUpdated(row, Column.SIZE.getId());
+    }
+    
+    public synchronized void fireDoneCellUpdatedThreadSafe(int row)
+    {
+    	tableModel.fireTableCellUpdated(row, Column.DONE.getId());
     }
 
-    public synchronized void fireDownloadedColumnUpdatedThreadSafe(int row)
+    public synchronized void fireDownloadedCellUpdatedThreadSafe(int row)
     {
         tableModel.fireTableCellUpdated(row, Column.DOWNLOADED.getId());
     }
 
-    public void fireStatusColumnUpdated(int row)
+    public void fireStatusCellUpdated(int row)
     {
         tableModel.fireTableCellUpdated(row, Column.STATUS.getId());
         saveDatabase();
     }
 
-    public synchronized void fireStatusColumnUpdatedThreadSafe(int row)
+    public synchronized void fireStatusCellUpdatedThreadSafe(int row)
     {
         tableModel.fireTableCellUpdated(row, Column.STATUS.getId());
         saveDatabase();

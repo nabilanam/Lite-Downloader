@@ -12,125 +12,117 @@ import java.util.logging.Logger;
  *
  * @author nabil
  */
-public class Download implements Serializable
-{
-    private static final long serialVersionUID = 6030894333031168823L;
+public class Download implements Serializable {
+	private static final long serialVersionUID = 6030894333031168823L;
 
-    private int did;
-    private final String url;
-    private final String etag;
-    private final String filePath;
-    private final String fileName;
-    private final String contentType;
-    private final String lastModified;
-    private final long contentLength;
-    private long downloadedLength;
-    private DownloadStatus downloadStatus;
+	private int did;
+	private final String url;
+	private final String etag;
+	private final String filePath;
+	private final String fileName;
+	private final String contentType;
+	private final String lastModified;
+	private long contentLength;
+	private long downloadedLength;
+	private boolean isSingleConnection;
+	private DownloadStatus downloadStatus;
 
-    public Download(int did, String url, String fileName, String filePath, String etag, String lastModified, String contentType, long contentLength)
-    {
-        this.did = did;
-        this.url = url;
-        this.etag = etag;
-        this.lastModified = lastModified;
-        this.fileName = fileName;
-        this.contentType = contentType;
-        this.contentLength = contentLength;
-        this.filePath = filePath;
-        this.downloadedLength = 0;
-        this.downloadStatus = DownloadStatus.Stopped;
-    }
-    
-    public synchronized void addToDownloadedLengthThreadSafe(int length)
-    {
-        downloadedLength += length;
-    }
+	public Download(int did, String url, String fileName, String filePath, String etag, String lastModified,
+			String contentType, long contentLength) {
+		this.did = did;
+		this.url = url;
+		this.etag = etag;
+		this.lastModified = lastModified;
+		this.fileName = fileName;
+		this.contentType = contentType;
+		this.contentLength = contentLength;
+		this.filePath = filePath;
+		this.downloadedLength = 0;
+		this.downloadStatus = DownloadStatus.Stopped;
+	}
 
-    public int getDId()
-    {
-        return did;
-    }
+	public synchronized void addToDownloadedLengthThreadSafe(int length) {
+		downloadedLength += length;
+	}
 
-    public void setDId(int did)
-    {
-        this.did = did;
-    }
+	public int getDId() {
+		return did;
+	}
 
-    public URL getUrl()
-    {
-        try
-        {
-            return new URL(url);
-        }
-        catch (MalformedURLException ex)
-        {
-            Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
-    }
+	public void setDId(int did) {
+		this.did = did;
+	}
 
-    public String getFileName()
-    {
-        return fileName;
-    }
+	public URL getUrl() {
+		try {
+			return new URL(url);
+		} catch (MalformedURLException ex) {
+			Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
+		}
+		return null;
+	}
 
-    public long getContentLength()
-    {
-        return contentLength;
-    }
+	public String getFileName() {
+		return fileName;
+	}
+	
+	public void setContentLength(long length) {
+		contentLength = length;
+	}
+	
+	public long getContentLength() {
+		return contentLength;
+	}
 
-    public Path getFilePath()
-    {
-        return Paths.get(filePath);
-    }
+	public Path getFilePath() {
+		return Paths.get(filePath);
+	}
 
-    public long getDownloadedLength()
-    {
-        return downloadedLength;
-    }
+	public long getDownloadedLength() {
+		return downloadedLength;
+	}
 
-    public void setDownloadedLength(long length)
-    {
-        downloadedLength = length;
-    }
+	public void setDownloadedLength(long length) {
+		downloadedLength = length;
+	}
 
-    public DownloadStatus getDownloadStatus()
-    {
-        return downloadStatus;
-    }
+	public DownloadStatus getDownloadStatus() {
+		return downloadStatus;
+	}
 
-    public void setDownloadStatus(DownloadStatus downloadStatus)
-    {
-        this.downloadStatus = downloadStatus;
-    }
+	public void setDownloadStatus(DownloadStatus downloadStatus) {
+		this.downloadStatus = downloadStatus;
+	}
+	
+	public void setSingleConnectionStatus() {
+		this.isSingleConnection = true;
+	}
+	
+	public boolean getSingleConnectionStatus() {
+		return isSingleConnection;
+	}
 
-    public String getContentType()
-    {
-        return contentType;
-    }
+	public String getContentType() {
+		return contentType;
+	}
 
-    public float getPercantage()
-    {
-        return (float) downloadedLength / (float) contentLength;
-    }
+	public float getPercantage() {
+		return (float) downloadedLength / (float) contentLength;
+	}
 
-    public String getEtag()
-    {
-        return etag;
-    }
+	public String getEtag() {
+		return etag;
+	}
 
-    public String getLastModified()
-    {
-        return lastModified;
-    }
+	public String getLastModified() {
+		return lastModified;
+	}
 
-    public String getLengthString()
-    {
-        return ByteRepresentation.Represent(contentLength);
-    }
+	public String getLengthString() {
+		return ByteRepresentation.Represent(contentLength);
+	}
 
-    public String getDownloadedLengthString()
-    {
-        return ByteRepresentation.Represent(downloadedLength);
-    }
+	public String getDownloadedLengthString() {
+		return ByteRepresentation.Represent(downloadedLength);
+	}
 }

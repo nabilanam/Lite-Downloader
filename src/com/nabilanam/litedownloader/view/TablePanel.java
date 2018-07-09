@@ -1,21 +1,30 @@
 package com.nabilanam.litedownloader.view;
 
-import com.nabilanam.litedownloader.controller.TableController;
 import java.awt.BorderLayout;
+
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import com.nabilanam.litedownloader.controller.TablePopupMenuController;
+import com.nabilanam.litedownloader.model.TableModel;
 
 /**
  *
  * @author nabil
  */
 @SuppressWarnings("serial")
-public final class TablePanel extends JPanel
-{
-    public TablePanel(TableController tableController)
-    {
-        super();
-        setLayout(new BorderLayout());
-        add(new JScrollPane(new Table(tableController)), BorderLayout.CENTER);
-    }
+public final class TablePanel extends JPanel {
+	
+	private Table table;
+	
+	public TablePanel(TableModel tableModel, TablePopupMenuController popupMenuController) {
+		super();
+		setLayout(new BorderLayout());
+		table = new Table(tableModel, popupMenuController);
+		add(new JScrollPane(table), BorderLayout.CENTER);
+	}
+
+	public int getSelectedDid() {
+		return table.getDid();
+	}
 }

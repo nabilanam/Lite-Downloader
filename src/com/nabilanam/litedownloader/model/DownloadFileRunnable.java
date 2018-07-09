@@ -1,9 +1,5 @@
 package com.nabilanam.litedownloader.model;
 
-import com.nabilanam.litedownloader.controller.TableController;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.file.Files;
@@ -16,14 +12,18 @@ import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.nabilanam.litedownloader.controller.PaneGenerator;
+import com.nabilanam.litedownloader.controller.TableController;
+
 /**
  *
  * @author nabil
  */
 public class DownloadFileRunnable implements Runnable {
+	
 	private final int MAX_THREAD = 4;
 	private final ExecutorService es;
-	private final Download download;
+	public final Download download;
 	private final TableController tableController;
 	private final ArrayList<Path> tmpPaths;
 
@@ -35,116 +35,58 @@ public class DownloadFileRunnable implements Runnable {
 		populateTmpPaths();
 	}
 
+	private void populateTmpPaths() {
+		int fileCount = download.getTmpFiles();
+		for (int a = MAX_THREAD - fileCount; a < MAX_THREAD; a++) {
+			tmpPaths.add(Paths.get(download.getFilePath().toString() + a));
+		}
+	}
+
 	@Override
 	public void run() {
-		
-		if (!download.getSingleConnectionStatus() && download.getFilePath().toFile().exists()) {
+		if (doesDownloadedFileExist()) {
 			if (!getConfirmationFileDelete()) {
-				updateTableDownloadStopped();
+				tableController.updateTableStatusStopped(download);
 				return;
 			}
 		}
-		
-		if (supportRanges() && getStatus() == HttpURLConnection.HTTP_NOT_MODIFIED
-				&& download.getContentLength() > MAX_THREAD) {
 
-			CountDownLatch cdl = new CountDownLatch(MAX_THREAD);
-			long size = download.getContentLength() / MAX_THREAD;
-			long start, end = -1;
-			Path path;
-			for (int a = 0; a < MAX_THREAD; a++) {
-				path = tmpPaths.get(a);
-				start = end + 1;
-				end = (a == (MAX_THREAD - 1)) ? download.getContentLength() : (start + size);
-				start += path.toFile().length();
-				if (end - start > 0) {
-					es.submit(new DownloadRunnable(cdl, path, start, end, download, tableController));
-				} else {
-					cdl.countDown();
-				}
+		boolean isMultipart = isDownloadMultipart();
+		if (isMultipart && getStatus() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+			if ((download.getDownloadStatus() == DownloadStatus.Paused)
+					|| (download.getDownloadStatus() == DownloadStatus.Stopped)) {
+				startMultipartDownload();
 			}
-			try {
-				cdl.await();
-			} catch (InterruptedException e) {
-				es.shutdownNow();
-				threadSleep();
-				return;
+			if (download.getDownloadStatus() == DownloadStatus.Merge) {
+				es.submit(new MultipartFileMergeRunnable(download, tmpPaths, tableController));
 			}
-			threadSleep();
-
-			if (download.getContentLength() == download.getDownloadedLength()) {
-				mergeFiles();
-				updateTableDownloadCompleted();
-			} else {
-				for (Path tmpPath : tmpPaths) {
-					try {
-						Files.deleteIfExists(tmpPath);
-					} catch (IOException ex) {
-						Logger.getLogger(DownloadFileRunnable.class.getName()).log(Level.SEVERE, null, ex);
-					}
-				}
-				tableController.showErrorMessageThreadSafe(Messages.ERROR_FILE_SIZE_MISMATCH);
-				updateTableDownloadError();
-			}
-		} else {
-			CountDownLatch cdl = new CountDownLatch(1);
-			download.setSingleConnectionStatus();
-			es.submit(new DownloadRunnable(cdl, download, tableController));
-			try {
-				cdl.await();
-				if (download.getContentLength() < 0) {
-					download.setContentLength(download.getDownloadedLength());
-					updateTableUndefinedDownload();
-				}
-				updateTableDownloadCompleted();
-			} catch (InterruptedException e) {
-				es.shutdownNow();
-				updateTableDownloadError();
-			}
+		} else if (!isMultipart) {
+			startSinglepartDownload();
 		}
+
 		es.shutdown();
 	}
 
-	private void updateTableUndefinedDownload() {
-		tableController.fireSizeCellUpdatedThreadSafe(download.getDId());
-		tableController.fireDoneCellUpdatedThreadSafe(download.getDId());
-		tableController.fireDownloadedCellUpdatedThreadSafe(download.getDId());
-	}
-
-	private void threadSleep() {
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException ex) {
-			Logger.getLogger(DownloadFileRunnable.class.getName()).log(Level.SEVERE, null, ex);
-		}
-	}
-
-	private void updateTableDownloadStopped() {
-		download.setDownloadStatus(DownloadStatus.Stopped);
-		tableController.fireStatusCellUpdated(download.getDId());
-	}
-
-	private void updateTableDownloadError() {
-		download.setDownloadStatus(DownloadStatus.Error);
-		tableController.fireStatusCellUpdatedThreadSafe(download.getDId());
-	}
-
-	private void updateTableDownloadCompleted() {
-		download.setDownloadStatus(DownloadStatus.Completed);
-		tableController.fireStatusCellUpdatedThreadSafe(download.getDId());
+	private boolean doesDownloadedFileExist() {
+		return download.getFilePath().toFile().exists()
+				&& (download.getContentLength() == download.getFilePath().toFile().length());
 	}
 
 	private boolean getConfirmationFileDelete() {
-		boolean confirm = tableController.showConfirmDialogThreadSafe(Messages.CONFIRM_FILE_DELETE);
+		boolean confirm = PaneGenerator.showConfirmDialogInvokeLater(PaneMessages.CONFIRM_FILE_DELETE);
 		if (confirm) {
 			try {
 				Files.deleteIfExists(download.getFilePath());
 			} catch (IOException ex) {
-				tableController.showErrorMessageThreadSafe(Messages.ERROR_FILE_CAN_NOT_BE_DELETED
+				PaneGenerator.showErrorMessageInvokeLater(PaneMessages.ERROR_FILE_CAN_NOT_BE_DELETED
 						+ System.lineSeparator() + download.getFilePath().toFile());
 			}
 		}
 		return confirm;
+	}
+
+	private boolean isDownloadMultipart() {
+		return supportRanges() && download.getContentLength() > MAX_THREAD;
 	}
 
 	private boolean supportRanges() {
@@ -184,7 +126,7 @@ public class DownloadFileRunnable implements Runnable {
 			con.disconnect();
 			return responseCode;
 		} catch (IOException ex) {
-			tableController.showErrorMessageThreadSafe(Messages.ERROR_NETWORK_CONNECTION);
+			PaneGenerator.showErrorMessageInvokeLater(PaneMessages.ERROR_NETWORK_CONNECTION);
 			if (con != null) {
 				con.disconnect();
 			}
@@ -192,49 +134,64 @@ public class DownloadFileRunnable implements Runnable {
 		}
 	}
 
-	private void mergeFiles() {
-		if (download.getFilePath().toFile().exists()) {
-			try {
-				Files.deleteIfExists(download.getFilePath());
-			} catch (IOException ex) {
-				tableController.showErrorMessageThreadSafe(Messages.ERROR_FILE_MERGE);
-			}
+	private void startMultipartDownload() {
+		tableController.updateTableStatusDownloading(download);
+		CountDownLatch cdl = new CountDownLatch(MAX_THREAD);
+		long size = download.getContentLength() / MAX_THREAD;
+		long end = -1;
+		for (int a = 0; a < MAX_THREAD; a++) {
+			end = addPartialDownload(cdl, size, end, a);
 		}
-		try (FileOutputStream fos = new FileOutputStream(download.getFilePath().toFile())) {
-			for (Path tmpPath : tmpPaths) {
-				try (FileInputStream fis = new FileInputStream(tmpPath.toFile())) {
-					int bytesRead;
-					byte[] buffer = new byte[4096];
-					while ((bytesRead = fis.read(buffer)) > -1) {
-						if (Thread.interrupted()) {
-							tableController.showErrorMessageThreadSafe(Messages.ERROR_FILE_MERGE_INTERRUPTED);
-						}
-						fos.write(buffer, 0, bytesRead);
-						fos.flush();
-					}
-				}
-			}
-		} catch (FileNotFoundException ex) {
-			tableController.showErrorMessageThreadSafe(
-					Messages.ERROR_FILE_MERGE + System.lineSeparator() + Messages.ERROR_FILE_DOES_NOT_EXIST);
-			return;
-		} catch (IOException ex) {
-			tableController.showErrorMessageThreadSafe(
-					Messages.ERROR_FILE_MERGE + System.lineSeparator() + Messages.ERROR_IO_EXCEPTION);
+		try {
+			cdl.await();
+		} catch (InterruptedException e) {
+			gracefulShutdown();
 			return;
 		}
-		for (Path tmpPath : tmpPaths) {
-			try {
-				Files.deleteIfExists(tmpPath);
-			} catch (IOException ex) {
-				Logger.getLogger(DownloadFileRunnable.class.getName()).log(Level.SEVERE, null, ex);
-			}
+		tableController.updateTableStatusFileMerging(download);
+	}
+
+	private long addPartialDownload(CountDownLatch cdl, long size, long end, int a) {
+		long start;
+		Path path;
+		path = tmpPaths.get(a);
+		start = end + 1;
+		end = (a == (MAX_THREAD - 1)) ? download.getContentLength() : (start + size);
+		start += path.toFile().length();
+		if (end - start > 0) {
+			es.submit(new DownloadRunnable(cdl, path, start, end, download, tableController));
+		} else {
+			cdl.countDown();
+		}
+		return end;
+	}
+
+	private void gracefulShutdown() {
+		es.shutdownNow();
+		threadSleep();
+	}
+
+	private void threadSleep() {
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException ex) {
+			Logger.getLogger(DownloadFileRunnable.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
-	private void populateTmpPaths() {
-		for (int a = 0; a < MAX_THREAD; a++) {
-			tmpPaths.add(Paths.get(download.getFilePath().toString() + a));
+	private void startSinglepartDownload() {
+		CountDownLatch cdl = new CountDownLatch(1);
+		download.setSingleConnectionStatus();
+		es.submit(new DownloadRunnable(cdl, download, tableController));
+		try {
+			cdl.await();
+			if (download.getContentLength() < 0) {
+				download.setContentLength(download.getDownloadedLength());
+				tableController.updateTableUndefinedDownload(download);
+			}
+			tableController.updateTableStatusCompleted(download);
+		} catch (InterruptedException e) {
+			gracefulShutdown();
 		}
 	}
 }

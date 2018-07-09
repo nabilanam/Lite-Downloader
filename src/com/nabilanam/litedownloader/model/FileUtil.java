@@ -12,32 +12,26 @@ import java.io.ObjectOutputStream;
  *
  * @author nabil
  */
-public class FileUtil
-{
-    private static final File FILE = new File("data");
-    
-    public synchronized static void serialize(Database db) throws FileNotFoundException, IOException
-    {
-        FILE.createNewFile();
-        try (FileOutputStream fos = new FileOutputStream(FILE);
-                ObjectOutputStream outputStream = new ObjectOutputStream(fos))
-        {
-            outputStream.writeObject(db);
-        }
-    }
+public class FileUtil {
+	
+	private static final File FILE = new File("data");
 
-    public static Database deserialize()
-    {
-        Database db;
-        try (FileInputStream fis = new FileInputStream(FILE);
-                ObjectInputStream inputStream = new ObjectInputStream(fis))
-        {
-            db = (Database) inputStream.readObject();
-        }
-        catch (IOException | ClassNotFoundException ex)
-        {
-            db = null;
-        }
-        return db;
-    }
+	public static Database deserialize() {
+		Database db;
+		try (FileInputStream fis = new FileInputStream(FILE);
+				ObjectInputStream inputStream = new ObjectInputStream(fis)) {
+			db = (Database) inputStream.readObject();
+		} catch (IOException | ClassNotFoundException ex) {
+			db = null;
+		}
+		return db;
+	}
+
+	public static void serialize(Database db) throws FileNotFoundException, IOException {
+		FILE.createNewFile();
+		try (FileOutputStream fos = new FileOutputStream(FILE);
+				ObjectOutputStream outputStream = new ObjectOutputStream(fos)) {
+			outputStream.writeObject(db);
+		}
+	}
 }

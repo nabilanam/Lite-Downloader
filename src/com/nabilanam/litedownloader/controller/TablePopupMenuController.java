@@ -7,8 +7,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.nabilanam.litedownloader.model.DownloadService;
+import com.nabilanam.litedownloader.model.GlobalConstants;
 import com.nabilanam.litedownloader.model.PaneMessages;
 import com.nabilanam.litedownloader.model.TableModel;
+
 
 /**
  *
@@ -44,7 +47,7 @@ public class TablePopupMenuController {
 	public void removeDownloadFile(int did) {
 		try {
 			Path path = DownloadService.getInstance().getDownloadFilePath(did);
-			for (int a = 0; a < 4; a++) {
+			for (int a = 0; a < GlobalConstants.MAX_CONNECTION; a++) {
 				Files.deleteIfExists(Paths.get(path.toString() + a));
 			}
 			Files.deleteIfExists(path);

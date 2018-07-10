@@ -25,7 +25,7 @@ public class Pane {
 	public Pane(JFrame parent, String title) {
 		this.title = title;
 		this.parent = parent;
-		this.inputDialog = new InputDialog(parent);
+		this.inputDialog = new InputDialog(parent, title);
 	}
 
 	public boolean showConfirmDialog(String message) {

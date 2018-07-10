@@ -20,7 +20,7 @@ import com.nabilanam.litedownloader.controller.TableController;
 public class MultipartFileMergeRunnable implements Runnable {
 
 	private Download download;
-	private final int MAX_THREAD = 4;
+	private final int MAX_THREAD = GlobalConstants.MAX_CONNECTION;
 	private ArrayList<Path> tmpPaths;
 	private TableController tableController;
 

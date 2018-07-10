@@ -51,10 +51,22 @@ public class Database implements Serializable {
 
 	public List<Download> getDownloads() {
 		for (Download download : downloads) {
-			if (download.getDownloadStatus() == DownloadStatus.Completed && !download.getFilePath().toFile().exists()) {
+			File file = download.getFilePath().toFile();
+			if (download.getDownloadStatus() == DownloadStatus.Completed && !file.exists()) {
 				download.setDownloadedLength(0);
 				download.setDownloadStatus(DownloadStatus.Stopped);
 			}
+//			else if (download.getDownloadStatus() == DownloadStatus.Paused || download.getDownloadStatus() == DownloadStatus.Stopped) {
+//				if (file.exists()) {
+//					download.setDownloadedLength(file.length());
+//				}
+//				for(int i=0; i<4; i++) {
+//					File tmpFile = new File(download.getTmpFiles())
+//					if (condition) {
+//						
+//					}
+//				}
+//			}
 		}
 		return Collections.unmodifiableList(downloads);
 	}

@@ -8,8 +8,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import com.nabilanam.litedownloader.controller.DownloadService;
+import com.nabilanam.litedownloader.controller.TableController;
 import com.nabilanam.litedownloader.controller.TablePopupMenuController;
+import com.nabilanam.litedownloader.model.Column;
 import com.nabilanam.litedownloader.model.TableModel;
 
 /**
@@ -19,11 +20,13 @@ import com.nabilanam.litedownloader.model.TableModel;
 @SuppressWarnings("serial")
 public final class Table extends JTable {
 	
+	private final TableController tableController;
 	private final TablePopupMenu popupMenu;
 
-	public Table(TableModel tableModel, TablePopupMenuController popupMenuController) {
+	public Table(TableModel tableModel, TableController tableController, TablePopupMenuController popupMenuController) {
 		super(tableModel);
 		this.setRowSorter(tableModel.getRowSorter());
+		this.tableController = tableController;
 		this.popupMenu = new TablePopupMenu(this, popupMenuController);
 		setAutoCreateRowSorter(true);
 		setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
@@ -31,7 +34,7 @@ public final class Table extends JTable {
 		centerTableColumns();
 		setPreferredColumnWidths();
 		setMouseAdapter();
-		getColumn("Done").setCellRenderer(new ProgressRenderer());
+		getColumn(Column.DONE.getText()).setCellRenderer(new ProgressRenderer());
 	}
 
 	public int getDid() {
@@ -53,7 +56,7 @@ public final class Table extends JTable {
 
 	public void showPopupMenu(int x, int y) {
 		if (popupMenu != null) {
-			popupMenu.updateItems(DownloadService.getInstance().getDownloadStatus(getDid()));
+			popupMenu.updateItems(tableController.getRowDownloadStatus(getDid()));
 			popupMenu.show(x, y);
 		}
 	}

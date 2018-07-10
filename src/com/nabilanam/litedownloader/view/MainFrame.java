@@ -8,12 +8,13 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import com.nabilanam.litedownloader.controller.DownloadService;
 import com.nabilanam.litedownloader.controller.LeftbarController;
 import com.nabilanam.litedownloader.controller.PaneGenerator;
 import com.nabilanam.litedownloader.controller.TableController;
 import com.nabilanam.litedownloader.controller.TablePopupMenuController;
 import com.nabilanam.litedownloader.controller.TopbarController;
+import com.nabilanam.litedownloader.model.DownloadService;
+import com.nabilanam.litedownloader.model.GlobalConstants;
 import com.nabilanam.litedownloader.model.TableModel;
 
 /**
@@ -24,7 +25,7 @@ import com.nabilanam.litedownloader.model.TableModel;
 public final class MainFrame extends JFrame {
 
 	public MainFrame() {
-		super();
+		super(GlobalConstants.APP_NAME);
 		PaneGenerator.Init(this);
 		TableModel tableModel = new TableModel();
 		tableModel.setFileList(DownloadService.getInstance().getDownloads());
@@ -45,7 +46,7 @@ public final class MainFrame extends JFrame {
 
 		LeftbarPanel leftbarPanel = new LeftbarPanel(leftbarController);
 		TopbarPanel topbarPanel = new TopbarPanel(this, topbarController);
-		TablePanel tablePanel = new TablePanel(tableModel, popupMenuController);
+		TablePanel tablePanel = new TablePanel(tableModel, tableController, popupMenuController);
 		topbarController.setRemoveDownloadListener(() -> {
 			int did = tablePanel.getSelectedDid();
 			DownloadService.getInstance().removeDownload(did);

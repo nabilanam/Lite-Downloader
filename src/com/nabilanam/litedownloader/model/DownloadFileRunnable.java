@@ -21,7 +21,7 @@ import com.nabilanam.litedownloader.controller.TableController;
  */
 public class DownloadFileRunnable implements Runnable {
 	
-	private final int MAX_THREAD = 4;
+	private final int MAX_THREAD = GlobalConstants.MAX_CONNECTION;
 	private final ExecutorService es;
 	public final Download download;
 	private final TableController tableController;
@@ -50,20 +50,20 @@ public class DownloadFileRunnable implements Runnable {
 				return;
 			}
 		}
-
+		
 		boolean isMultipart = isDownloadMultipart();
 		if (isMultipart && getStatus() == HttpURLConnection.HTTP_NOT_MODIFIED) {
 			if ((download.getDownloadStatus() == DownloadStatus.Paused)
 					|| (download.getDownloadStatus() == DownloadStatus.Stopped)) {
 				startMultipartDownload();
 			}
-			if (download.getDownloadStatus() == DownloadStatus.Merge) {
-				es.submit(new MultipartFileMergeRunnable(download, tmpPaths, tableController));
-			}
+			startMerge();
+		} else if (isMultipart) {
+			startMultipartDownload();
+			startMerge();
 		} else if (!isMultipart) {
 			startSinglepartDownload();
 		}
-
 		es.shutdown();
 	}
 
@@ -151,6 +151,12 @@ public class DownloadFileRunnable implements Runnable {
 		tableController.updateTableStatusFileMerging(download);
 	}
 
+	private void startMerge() {
+		if (download.getDownloadStatus() == DownloadStatus.Merge) {
+			es.submit(new MultipartFileMergeRunnable(download, tmpPaths, tableController));
+		}
+	}
+
 	private long addPartialDownload(CountDownLatch cdl, long size, long end, int a) {
 		long start;
 		Path path;
@@ -180,6 +186,7 @@ public class DownloadFileRunnable implements Runnable {
 	}
 
 	private void startSinglepartDownload() {
+		tableController.updateTableStatusDownloading(download);
 		CountDownLatch cdl = new CountDownLatch(1);
 		download.setSingleConnectionStatus();
 		es.submit(new DownloadRunnable(cdl, download, tableController));

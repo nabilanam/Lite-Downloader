@@ -14,7 +14,7 @@ import java.io.ObjectOutputStream;
  */
 public class FileUtil {
 	
-	private static final File FILE = new File("data");
+	private static final File FILE = new File(GlobalConstants.DB_NAME);
 
 	public static Database deserialize() {
 		Database db;

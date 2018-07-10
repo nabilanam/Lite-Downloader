@@ -1,6 +1,7 @@
 package com.nabilanam.litedownloader.controller;
 
 import com.nabilanam.litedownloader.model.Download;
+import com.nabilanam.litedownloader.model.DownloadService;
 import com.nabilanam.litedownloader.model.DownloadStatus;
 import com.nabilanam.litedownloader.model.TableModel;
 
@@ -14,6 +15,10 @@ public class TableController {
 
 	public TableController(TableModel tableModel) {
 		this.tableModel = tableModel;
+	}
+	
+	public DownloadStatus getRowDownloadStatus(int did) {
+		return DownloadService.getInstance().getDownloadStatus(did);
 	}
 
 	public void fireNewRowInserted(int id) {

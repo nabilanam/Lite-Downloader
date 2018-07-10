@@ -1,19 +1,15 @@
 package com.nabilanam.litedownloader.model;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.Callable;
 
-import com.nabilanam.litedownloader.controller.DownloadService;
 import com.nabilanam.litedownloader.controller.PaneGenerator;
-import com.sun.xml.internal.ws.util.StringUtils;
 
 /**
  *

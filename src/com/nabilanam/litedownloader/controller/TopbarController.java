@@ -1,5 +1,6 @@
 package com.nabilanam.litedownloader.controller;
 
+import com.nabilanam.litedownloader.model.DownloadService;
 import com.nabilanam.litedownloader.model.RemoveDownloadListener;
 
 /**

@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import com.nabilanam.litedownloader.controller.TableController;
 import com.nabilanam.litedownloader.controller.TablePopupMenuController;
 import com.nabilanam.litedownloader.model.TableModel;
 
@@ -17,10 +18,10 @@ public final class TablePanel extends JPanel {
 	
 	private Table table;
 	
-	public TablePanel(TableModel tableModel, TablePopupMenuController popupMenuController) {
+	public TablePanel(TableModel tableModel, TableController tableController, TablePopupMenuController popupMenuController) {
 		super();
 		setLayout(new BorderLayout());
-		table = new Table(tableModel, popupMenuController);
+		table = new Table(tableModel, tableController, popupMenuController);
 		add(new JScrollPane(table), BorderLayout.CENTER);
 	}
 

@@ -1,12 +1,12 @@
-package com.nabilanam.litedownloader.controller;
+package com.nabilanam.litedownloader.model;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,14 +16,8 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.nabilanam.litedownloader.model.AddLinkListener;
-import com.nabilanam.litedownloader.model.Database;
-import com.nabilanam.litedownloader.model.Download;
-import com.nabilanam.litedownloader.model.DownloadFileRunnable;
-import com.nabilanam.litedownloader.model.DownloadInfoCallable;
-import com.nabilanam.litedownloader.model.DownloadStatus;
-import com.nabilanam.litedownloader.model.FileUtil;
-import com.nabilanam.litedownloader.model.PaneMessages;
+import com.nabilanam.litedownloader.controller.PaneGenerator;
+import com.nabilanam.litedownloader.controller.TableController;
 
 /**
  *
@@ -41,13 +35,13 @@ public class DownloadService {
 	private ExecutorService es;
 	private Database database;
 	private TableController tableController;
-	private HashMap<Integer, Future<?>> hashMap;
+	private ConcurrentHashMap<Integer, Future<?>> hashMap;
 	private AddLinkListener addLinkListener;
 	
 	private DownloadService() {
 		es = Executors.newCachedThreadPool();
 		database = Database.getInstance();
-		hashMap = new HashMap<>();
+		hashMap = new ConcurrentHashMap<>();
 	}
 
 	public void addDownload(String link, String folderPath) {
@@ -69,6 +63,11 @@ public class DownloadService {
 	}
 
 	public void removeDownload(int did) {
+		hashMap.remove(did);
+		int i = -1;
+		for (Integer key : hashMap.keySet()) {
+			hashMap.put(++i, hashMap.remove(key));
+		}
 		database.remove(did);
 		saveDatabaseThreadSafe();
 	}

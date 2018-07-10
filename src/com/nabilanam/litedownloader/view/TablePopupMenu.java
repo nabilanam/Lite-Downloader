@@ -92,7 +92,7 @@ public final class TablePopupMenu extends JPopupMenu {
 	public void updateItems(DownloadStatus status) {
 		switch (status) {
 		case Error:
-			start.setText("Start");
+			start.setText(MenuItem.START.getText());
 
 			start.setEnabled(false);
 			pause.setEnabled(false);
@@ -104,7 +104,7 @@ public final class TablePopupMenu extends JPopupMenu {
 			launchFolder.setEnabled(true);
 			break;
 		case Paused:
-			start.setText("Resume");
+			start.setText(MenuItem.RESUME.getText());
 
 			start.setEnabled(true);
 			pause.setEnabled(false);
@@ -116,7 +116,7 @@ public final class TablePopupMenu extends JPopupMenu {
 			launchFolder.setEnabled(true);
 			break;
 		case Stopped:
-			start.setText("Start");
+			start.setText(MenuItem.START.getText());
 
 			start.setEnabled(true);
 			pause.setEnabled(false);
@@ -128,7 +128,7 @@ public final class TablePopupMenu extends JPopupMenu {
 			launchFolder.setEnabled(true);
 			break;
 		case Completed:
-			start.setText("Resume");
+			start.setText(MenuItem.RESUME.getText());
 
 			start.setEnabled(false);
 			pause.setEnabled(false);
@@ -140,7 +140,7 @@ public final class TablePopupMenu extends JPopupMenu {
 			launchFolder.setEnabled(true);
 			break;
 		case Downloading:
-			start.setText("Resume");
+			start.setText(MenuItem.RESUME.getText());
 
 			start.setEnabled(false);
 			pause.setEnabled(true);
@@ -152,7 +152,7 @@ public final class TablePopupMenu extends JPopupMenu {
 			launchFolder.setEnabled(true);
 			break;
 		case Merge:
-			start.setText("Resume");
+			start.setText(MenuItem.RESUME.getText());
 
 			start.setEnabled(true);
 			pause.setEnabled(false);

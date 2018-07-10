@@ -2,6 +2,7 @@ package com.nabilanam.litedownloader.controller;
 
 import javax.swing.JFrame;
 
+import com.nabilanam.litedownloader.model.GlobalConstants;
 import com.nabilanam.litedownloader.view.Pane;
 
 /**
@@ -13,7 +14,7 @@ public class PaneGenerator {
 	private static Pane pane;
 	
 	public static void Init(JFrame parent) {
-		pane = new Pane(parent, "Lite Downloader");
+		pane = new Pane(parent, GlobalConstants.APP_NAME);
 	}
 	
 	public static boolean showConfirmDialog(String message) {

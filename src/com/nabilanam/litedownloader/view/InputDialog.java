@@ -35,7 +35,7 @@ public final class InputDialog {
 	private final JPanel btnPanel;
 	private String result;
 
-	public InputDialog(JFrame parent) {
+	public InputDialog(JFrame parent, String title) {
 		panel = new JPanel();
 		btnPanel = new JPanel();
 		okButton = new JButton("OK");
@@ -43,7 +43,7 @@ public final class InputDialog {
 		popupMenu = new TextPopupMenu();
 		cancelButton = new JButton("Cancel");
 		label = new JLabel("Add download link");
-		dialog = new JDialog(parent, "Download Manager", true);
+		dialog = new JDialog(parent, title, true);
 
 		setListeners();
 		layoutComponents();

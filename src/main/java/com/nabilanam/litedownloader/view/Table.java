@@ -38,7 +38,11 @@ public final class Table extends JTable {
 	}
 
 	public int getDid() {
-		return (int) getValueAt(getSelectedRow(), 0);
+		int row = getSelectedRow();
+		if (row == -1) {
+			return row;
+		}
+		return (int) getValueAt(row, 0);
 	}
 
 	public void setMouseAdapter() {

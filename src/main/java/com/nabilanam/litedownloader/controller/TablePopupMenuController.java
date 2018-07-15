@@ -12,14 +12,13 @@ import com.nabilanam.litedownloader.model.GlobalConstants;
 import com.nabilanam.litedownloader.model.PaneMessages;
 import com.nabilanam.litedownloader.model.TableModel;
 
-
 /**
  *
  * @author nabil
  */
 public class TablePopupMenuController {
-	
-	public TableModel tableModel;
+
+	private TableModel tableModel;
 
 	public TablePopupMenuController(TableModel tableModel) {
 		this.tableModel = tableModel;

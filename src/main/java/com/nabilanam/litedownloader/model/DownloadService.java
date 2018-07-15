@@ -37,7 +37,7 @@ public class DownloadService {
 	private TableController tableController;
 	private ConcurrentHashMap<Integer, Future<?>> hashMap;
 	private AddLinkListener addLinkListener;
-	
+
 	private DownloadService() {
 		es = Executors.newCachedThreadPool();
 		database = Database.getInstance();

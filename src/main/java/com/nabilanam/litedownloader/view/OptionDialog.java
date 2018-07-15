@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
@@ -20,23 +21,23 @@ import javax.swing.JTextField;
 @SuppressWarnings("serial")
 public final class OptionDialog extends JDialog {
 	
-	private final JLabel folderLabel;
-	private final JButton folderChooseButton;
-	private final JTextField folderTextField;
-	private final FolderChooser folderChooser;
+	private final JLabel directoryLabel;
+	private final JButton directoryChooseButton;
+	private final JTextField directoryTextField;
+	private final FileChooser fileChooser;
 
 	public OptionDialog(JFrame parent) {
 		Dimension dialogDimension = new Dimension(500, 100);
 		Dimension buttonDimension = new Dimension(24, 21);
 
-		folderChooser = new FolderChooser();
-		folderTextField = new JTextField(20);
-		folderChooseButton = new JButton("...");
-		folderLabel = new JLabel("Download Location: ");
+		fileChooser = new FileChooser(JFileChooser.DIRECTORIES_ONLY);
+		directoryTextField = new JTextField(20);
+		directoryChooseButton = new JButton("...");
+		directoryLabel = new JLabel("Download Location: ");
 
-		folderTextField.setEditable(false);
-		folderChooseButton.setSize(buttonDimension);
-		folderChooseButton.setPreferredSize(buttonDimension);
+		directoryTextField.setEditable(false);
+		directoryChooseButton.setSize(buttonDimension);
+		directoryChooseButton.setPreferredSize(buttonDimension);
 
 		setTitle("Options");
 		layoutComponents();
@@ -47,19 +48,19 @@ public final class OptionDialog extends JDialog {
 	}
 
 	String getFolderPath() {
-		return folderTextField.getText();
+		return directoryTextField.getText();
 	}
 
 	String launch() throws IOException {
-		return folderChooser.showFolderChooser(OptionDialog.this, "Select Folder");
+		return fileChooser.getPathFromUser(OptionDialog.this, "Select Folder");
 	}
 
 	void setActionListener(ActionListener listener) {
-		folderChooseButton.addActionListener(listener);
+		directoryChooseButton.addActionListener(listener);
 	}
 
 	void setFolderPath(String path) {
-		folderTextField.setText(path);
+		directoryTextField.setText(path);
 	}
 
 	private void layoutComponents() {
@@ -80,7 +81,7 @@ public final class OptionDialog extends JDialog {
 		gc.insets = emptyInsets;
 		gc.fill = GridBagConstraints.NONE;
 		gc.anchor = GridBagConstraints.LINE_END;
-		add(folderLabel, gc);
+		add(directoryLabel, gc);
 
 		// nameTextField
 		gc.gridx = 1;
@@ -90,7 +91,7 @@ public final class OptionDialog extends JDialog {
 
 		gc.insets = labelInsets;
 		gc.anchor = GridBagConstraints.LINE_END;
-		add(folderTextField, gc);
+		add(directoryTextField, gc);
 
 		// choose button
 		gc.gridx = 2;
@@ -100,6 +101,6 @@ public final class OptionDialog extends JDialog {
 
 		gc.insets = emptyInsets;
 		gc.anchor = GridBagConstraints.LINE_START;
-		add(folderChooseButton, gc);
+		add(directoryChooseButton, gc);
 	}
 }

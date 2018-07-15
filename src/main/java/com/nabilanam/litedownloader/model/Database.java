@@ -1,7 +1,7 @@
 package com.nabilanam.litedownloader.model;
 
 import java.io.File;
-import java.io.Serializable;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,8 +10,7 @@ import java.util.List;
  *
  * @author nabil
  */
-public class Database implements Serializable {
-	private static final long serialVersionUID = 905795729829071092L;
+public class Database {
 	
 	private static Database instance;
 
@@ -42,6 +41,9 @@ public class Database implements Serializable {
 	}
 
 	public void remove(int did) {
+		if (downloads.size() <= did) {
+			return;
+		}
 		downloads.remove(did);
 		this.did = -1;
 		for (Download dFile : downloads) {
@@ -52,27 +54,38 @@ public class Database implements Serializable {
 	public List<Download> getDownloads() {
 		for (Download download : downloads) {
 			File file = download.getFilePath().toFile();
-			if (download.getDownloadStatus() == DownloadStatus.Completed && !file.exists()) {
-				download.setDownloadedLength(0);
-				download.setDownloadStatus(DownloadStatus.Stopped);
+			DownloadStatus status = download.getDownloadStatus();
+			if (status == DownloadStatus.Completed && !file.exists()) {
+				resetDownload(download);
 			}
-//			else if (download.getDownloadStatus() == DownloadStatus.Paused || download.getDownloadStatus() == DownloadStatus.Stopped) {
-//				if (file.exists()) {
-//					download.setDownloadedLength(file.length());
-//				}
-//				for(int i=0; i<4; i++) {
-//					File tmpFile = new File(download.getTmpFiles())
-//					if (condition) {
-//						
-//					}
-//				}
-//			}
+			else if ((status == DownloadStatus.Paused 
+					|| status == DownloadStatus.Stopped)
+					&& download.getTmpPaths().size() > 0) {
+				boolean exists = true;
+				for (Path path : download.getTmpPaths()) {
+					if (!path.toFile().exists()) {
+						exists = false;
+						break;
+					}
+				}
+				if (!exists) {
+					for (Path path : download.getTmpPaths()) {
+						path.toFile().delete();
+					}
+					resetDownload(download);
+				}
+			}
 		}
 		return Collections.unmodifiableList(downloads);
 	}
 
-	public Download get(int id) {
-		return downloads.get(id);
+	private void resetDownload(Download download) {
+		download.setDownloadedLength(0);
+		download.setDownloadStatus(DownloadStatus.Stopped);
+	}
+
+	public Download get(int did) {
+		return downloads.get(did);
 	}
 
 	public String getFileDirectory() {

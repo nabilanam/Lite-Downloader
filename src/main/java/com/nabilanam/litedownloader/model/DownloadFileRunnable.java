@@ -31,15 +31,7 @@ public class DownloadFileRunnable implements Runnable {
 		this.es = Executors.newFixedThreadPool(MAX_THREAD);
 		this.download = download;
 		this.tableController = tableController;
-		this.tmpPaths = new ArrayList<>();
-		populateTmpPaths();
-	}
-
-	private void populateTmpPaths() {
-		int fileCount = download.getTmpFiles();
-		for (int a = MAX_THREAD - fileCount; a < MAX_THREAD; a++) {
-			tmpPaths.add(Paths.get(download.getFilePath().toString() + a));
-		}
+		this.tmpPaths = download.getTmpPaths();
 	}
 
 	@Override
@@ -51,17 +43,16 @@ public class DownloadFileRunnable implements Runnable {
 			}
 		}
 		
-		boolean isMultipart = isDownloadMultipart();
-		if (isMultipart && getStatus() == HttpURLConnection.HTTP_NOT_MODIFIED) {
+		if (download.isMultiConnection() && getStatus() == HttpURLConnection.HTTP_NOT_MODIFIED) {
 			if ((download.getDownloadStatus() == DownloadStatus.Paused)
 					|| (download.getDownloadStatus() == DownloadStatus.Stopped)) {
 				startMultipartDownload();
 			}
 			startMerge();
-		} else if (isMultipart) {
+		} else if (download.isMultiConnection()) {
 			startMultipartDownload();
 			startMerge();
-		} else if (!isMultipart) {
+		} else {
 			startSinglepartDownload();
 		}
 		es.shutdown();
@@ -83,33 +74,6 @@ public class DownloadFileRunnable implements Runnable {
 			}
 		}
 		return confirm;
-	}
-
-	private boolean isDownloadMultipart() {
-		return supportRanges() && download.getContentLength() > MAX_THREAD;
-	}
-
-	private boolean supportRanges() {
-		boolean result = false;
-		HttpURLConnection rangeCon = null;
-		try {
-			rangeCon = (HttpURLConnection) download.getUrl().openConnection();
-			rangeCon.setInstanceFollowRedirects(true);
-			rangeCon.setRequestMethod("GET");
-			rangeCon.setRequestProperty("Range", "bytes=0-10");
-			rangeCon.setRequestProperty("User-Agent",
-					"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36");
-			if (rangeCon.getResponseCode() == HttpURLConnection.HTTP_PARTIAL) {
-				result = true;
-			}
-			rangeCon.disconnect();
-		} catch (IOException ex) {
-			if (rangeCon != null) {
-				rangeCon.disconnect();
-			}
-			Logger.getLogger(DownloadFileRunnable.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		return result;
 	}
 
 	private int getStatus() {
@@ -153,16 +117,16 @@ public class DownloadFileRunnable implements Runnable {
 
 	private void startMerge() {
 		if (download.getDownloadStatus() == DownloadStatus.Merge) {
-			es.submit(new MultipartFileMergeRunnable(download, tmpPaths, tableController));
+			es.submit(new MultipartFileMergeRunnable(download, tableController));
 		}
 	}
 
-	private long addPartialDownload(CountDownLatch cdl, long size, long end, int a) {
+	private long addPartialDownload(CountDownLatch cdl, long size, long end, int count) {
 		long start;
 		Path path;
-		path = tmpPaths.get(a);
+		path = tmpPaths.get(count);
 		start = end + 1;
-		end = (a == (MAX_THREAD - 1)) ? download.getContentLength() : (start + size);
+		end = (count == (MAX_THREAD - 1)) ? download.getContentLength() : (start + size);
 		start += path.toFile().length();
 		if (end - start > 0) {
 			es.submit(new DownloadRunnable(cdl, path, start, end, download, tableController));
@@ -188,7 +152,6 @@ public class DownloadFileRunnable implements Runnable {
 	private void startSinglepartDownload() {
 		tableController.updateTableStatusDownloading(download);
 		CountDownLatch cdl = new CountDownLatch(1);
-		download.setSingleConnectionStatus();
 		es.submit(new DownloadRunnable(cdl, download, tableController));
 		try {
 			cdl.await();

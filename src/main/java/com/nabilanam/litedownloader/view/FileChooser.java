@@ -9,18 +9,18 @@ import javax.swing.JFileChooser;
  *
  * @author nabil
  */
-public class FolderChooser {
+public class FileChooser {
 	
 	private final JFileChooser folderChooser;
 
-	public FolderChooser() {
+	public FileChooser(int jFileChooserMode) {
 		folderChooser = new JFileChooser();
-		folderChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		folderChooser.setFileSelectionMode(jFileChooserMode);
 		folderChooser.setAcceptAllFileFilterUsed(false);
 	}
 
-	public String showFolderChooser(Window parent, String title) throws IOException {
-		if (folderChooser.showDialog(parent, title) == JFileChooser.APPROVE_OPTION) {
+	public String getPathFromUser(Window parent, String btnTxt) throws IOException {
+		if (folderChooser.showDialog(parent, btnTxt) == JFileChooser.APPROVE_OPTION) {
 			return folderChooser.getSelectedFile().getCanonicalPath();
 		}
 		return null;

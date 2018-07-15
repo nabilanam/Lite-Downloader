@@ -24,9 +24,9 @@ public class MultipartFileMergeRunnable implements Runnable {
 	private ArrayList<Path> tmpPaths;
 	private TableController tableController;
 
-	public MultipartFileMergeRunnable(Download download, ArrayList<Path> tmpPaths, TableController tableController) {
+	public MultipartFileMergeRunnable(Download download, TableController tableController) {
 		this.download = download;
-		this.tmpPaths = tmpPaths;
+		this.tmpPaths = download.getTmpPaths();
 		this.tableController = tableController;
 	}
 
@@ -65,7 +65,6 @@ public class MultipartFileMergeRunnable implements Runnable {
 						fis.close();
 						threadSleep();
 						deleteTempFilesRecursive(i);
-						download.setTmpFiles(tmpPaths.size());
 						tableController.updateTableStatusFileMerging(download);
 						return false;
 					}

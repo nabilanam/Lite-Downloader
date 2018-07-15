@@ -1,5 +1,8 @@
+.*
+!/.gitignore
 /bin/
-
-/dist/lite-downloader.data
-/lib/
-/lite-downloader.data
+/target/
+lite-downloader.data
+dependency-reduced-pom.xml
+buildNumber.properties
+dependency-reduced-pom.xml

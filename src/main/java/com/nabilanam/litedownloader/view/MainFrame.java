@@ -49,8 +49,10 @@ public final class MainFrame extends JFrame {
 		TablePanel tablePanel = new TablePanel(tableModel, tableController, popupMenuController);
 		topbarController.setRemoveDownloadListener(() -> {
 			int did = tablePanel.getSelectedDid();
-			DownloadService.getInstance().removeDownload(did);
-			tableModel.fireTableRowsDeleted(did, did);
+			if (did != -1) {
+				DownloadService.getInstance().removeDownload(did);
+				tableModel.fireTableRowsDeleted(did, did);
+			}
 		});
 
 		setLayout(new BorderLayout());

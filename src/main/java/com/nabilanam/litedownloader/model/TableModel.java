@@ -68,7 +68,7 @@ public final class TableModel extends AbstractTableModel {
 		case 3:
 			return download.getLengthString();
 		case 4:
-			return download.getPercantage();
+			return download.getPercantageThreadSafe();
 		case 5:
 			return download.getDownloadedLengthString();
 		case 6:

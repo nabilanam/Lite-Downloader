@@ -15,7 +15,7 @@ For more info read [NOTICE](NOTICE)
 
 ### How to Run
 * Download and install [Java](https://java.com/en/download/)
-* Download [Lite-Downloader](https://raw.githubusercontent.com/nabilanam/Lite-Downloader/master/dist/Lite-Downloader-0.1-snapshot.jar) and run
+* Download [Lite-Downloader](https://raw.githubusercontent.com/nabilanam/Lite-Downloader/master/dist/Lite-Downloader-0.1.jar) (v0.1) and run
 
 
 ### License

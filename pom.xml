@@ -20,7 +20,7 @@
         <connection>scm:git:git@github.com:nabilanam/Lite-Downloader.git</connection>
         <developerConnection>scm:git:git@github.com:nabilanam/Lite-Downloader.git</developerConnection>
         <url>https://github.com/nabilanam/Lite-Downloader</url>
-        <tag>${project.version}</tag>
+        <tag>v${project.version}</tag>
     </scm>
 
 	<build>
@@ -70,7 +70,7 @@
 					<goals>pre-integration-test</goals>
 					<preparationGoals>package</preparationGoals>
 					<allowTimestampedSnapshots>true</allowTimestampedSnapshots>
-					<tagNameFormat>${project.version}</tagNameFormat>
+					<tagNameFormat>v${project.version}</tagNameFormat>
 					<remoteTagging>false</remoteTagging>
 				</configuration>
 			</plugin>

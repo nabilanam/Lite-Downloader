@@ -7,6 +7,7 @@ import javax.swing.JScrollPane;
 
 import com.nabilanam.litedownloader.controller.TableController;
 import com.nabilanam.litedownloader.controller.TablePopupMenuController;
+import com.nabilanam.litedownloader.model.DownloadStatus;
 import com.nabilanam.litedownloader.model.TableModel;
 
 /**
@@ -16,7 +17,7 @@ import com.nabilanam.litedownloader.model.TableModel;
 @SuppressWarnings("serial")
 public final class TablePanel extends JPanel {
 	
-	private Table table;
+	private final Table table;
 	
 	public TablePanel(TableModel tableModel, TableController tableController, TablePopupMenuController popupMenuController) {
 		super();
@@ -27,5 +28,9 @@ public final class TablePanel extends JPanel {
 
 	public int getSelectedDid() {
 		return table.getDid();
+	}
+	
+	public void tableFilterChanged(DownloadStatus status) {
+		table.filterByDownloadStatus(status);
 	}
 }

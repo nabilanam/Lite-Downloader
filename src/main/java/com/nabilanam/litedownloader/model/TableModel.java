@@ -3,9 +3,7 @@ package com.nabilanam.litedownloader.model;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.RowFilter;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -14,26 +12,10 @@ import javax.swing.table.TableRowSorter;
 @SuppressWarnings("serial")
 public final class TableModel extends AbstractTableModel {
 	
-	private final TableRowSorter<TableModel> rowSorter;
 	private List<Download> fileList;
 
 	public TableModel() {
 		fileList = new LinkedList<>();
-		rowSorter = new TableRowSorter<>(this);
-		rowSorter.setSortsOnUpdates(true);
-	}
-
-	public void changeFilter(DownloadStatus status) {
-		if (status == null) {
-			rowSorter.setRowFilter(null);
-		} else {
-			rowSorter.setRowFilter(new RowFilter() {
-				@Override
-				public boolean include(RowFilter.Entry entry) {
-					return status.name().equals(entry.getStringValue(6));
-				}
-			});
-		}
 	}
 
 	@Override
@@ -49,10 +31,6 @@ public final class TableModel extends AbstractTableModel {
 	@Override
 	public int getRowCount() {
 		return fileList.size();
-	}
-
-	public TableRowSorter<TableModel> getRowSorter() {
-		return rowSorter;
 	}
 
 	@Override
@@ -79,10 +57,6 @@ public final class TableModel extends AbstractTableModel {
 
 	public void setFileList(List<Download> fileList) {
 		this.fileList = fileList;
-	}
-
-	public void fireFilterChanged(DownloadStatus status) {
-		changeFilter(status);
 	}
 
 	public void fireSizeCellUpdated(int row) {

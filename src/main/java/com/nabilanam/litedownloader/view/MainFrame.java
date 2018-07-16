@@ -34,6 +34,9 @@ public final class MainFrame extends JFrame {
 		LeftbarController leftbarController = new LeftbarController();
 		TableController tableController = new TableController(tableModel);
 		TablePopupMenuController popupMenuController = new TablePopupMenuController(tableModel);
+		LeftbarPanel leftbarPanel = new LeftbarPanel(leftbarController);
+		TopbarPanel topbarPanel = new TopbarPanel(this, topbarController);
+		TablePanel tablePanel = new TablePanel(tableModel, tableController, popupMenuController);
 		
 		Dimension size = new Dimension(800, 600);
 		DownloadService.getInstance().setTableController(tableController);
@@ -41,12 +44,9 @@ public final class MainFrame extends JFrame {
 			tableController.fireNewRowInserted(did);
 		});
 		leftbarController.setNodeSelectionListener((status) -> {
-			tableModel.fireFilterChanged(status);
+			tablePanel.tableFilterChanged(status);
 		});
 
-		LeftbarPanel leftbarPanel = new LeftbarPanel(leftbarController);
-		TopbarPanel topbarPanel = new TopbarPanel(this, topbarController);
-		TablePanel tablePanel = new TablePanel(tableModel, tableController, popupMenuController);
 		topbarController.setRemoveDownloadListener(() -> {
 			int did = tablePanel.getSelectedDid();
 			if (did != -1) {

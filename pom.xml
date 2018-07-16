@@ -1,11 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.nabilanam</groupId>
 	<artifactId>Lite-Downloader</artifactId>
-	<version>0.1-snapshot</version>
+	<version>0.1-SNAPSHOT</version>
 
 	<properties>
 		<encoding>UTF-8</encoding>
@@ -17,6 +15,13 @@
 		<project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
 		<project.resources.sourceEncoding>${encoding}</project.resources.sourceEncoding>
 	</properties>
+	
+	<scm>
+        <connection>scm:git:git@github.com:nabilanam/Lite-Downloader.git</connection>
+        <developerConnection>scm:git:git@github.com:nabilanam/Lite-Downloader.git</developerConnection>
+        <url>https://github.com/nabilanam/Lite-Downloader</url>
+        <tag>${project.version}</tag>
+    </scm>
 
 	<build>
 		<plugins>
@@ -45,6 +50,7 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+					<appendAssemblyId>false</appendAssemblyId>
 				</configuration>
 				<executions>
 					<execution>
@@ -64,7 +70,7 @@
 					<goals>pre-integration-test</goals>
 					<preparationGoals>package</preparationGoals>
 					<allowTimestampedSnapshots>true</allowTimestampedSnapshots>
-					<tagNameFormat>@{project.version}</tagNameFormat>
+					<tagNameFormat>${project.version}</tagNameFormat>
 					<remoteTagging>false</remoteTagging>
 				</configuration>
 			</plugin>

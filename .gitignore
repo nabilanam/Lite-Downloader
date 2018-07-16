@@ -5,4 +5,5 @@
 lite-downloader.data
 dependency-reduced-pom.xml
 buildNumber.properties
-dependency-reduced-pom.xml
+pom.xml.releaseBackup
+release.properties

@@ -157,6 +157,7 @@ public class MultipartFileMergeRunnable implements Runnable {
 				Logger.getLogger(DownloadFileRunnable.class.getName()).log(Level.SEVERE, null, ex);
 			}
 		}
+		tmpPaths.clear();
 	}
 
 }
